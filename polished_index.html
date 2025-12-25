@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebAR Temple</title>
+
+    <!-- A-Frame -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+    <!-- AR.js -->
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+
+  <body style="margin: 0; overflow: hidden; font-family: sans-serif;">
+
+    <!-- Instruction -->
+    <div id="hint" style="
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.6);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      z-index: 999;
+    ">
+      Point camera at the marker to view the temple
+    </div>
+
+    <!-- Info panel -->
+    <div id="info" style="
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.75);
+      color: white;
+      padding: 14px 18px;
+      border-radius: 10px;
+      max-width: 90%;
+      display: none;
+      z-index: 999;
+    ">
+      <b>Heritage Temple</b><br>
+      A historical temple showcasing traditional architecture and cultural significance.
+    </div>
+
+    <a-scene
+      embedded
+      vr-mode-ui="enabled: false"
+      arjs="sourceType: webcam; debugUIEnabled: false;"
+    >
+
+      <!-- Marker -->
+      <a-marker id="marker" preset="hiro">
+
+        <!-- Lighting -->
+        <a-entity light="type: ambient; intensity: 1"></a-entity>
+        <a-entity light="type: directional; intensity: 0.8" position="1 2 1"></a-entity>
+
+        <!-- Temple model -->
+        <a-entity
+          id="temple"
+          gltf-model="./temple.glb"
+          scale="0.3 0.3 0.3"
+          position="0 0.1 0"
+          rotation="0 180 0"
+          animation="property: rotation; to: 0 360 0; loop: true; dur: 12000"
+        ></a-entity>
+
+      </a-marker>
+
+      <!-- Camera -->
+      <a-entity camera></a-entity>
+
+    </a-scene>
+
+    <!-- Logic -->
+    <script>
+      const marker = document.querySelector("#marker");
+      const info = document.querySelector("#info");
+      const hint = document.querySelector("#hint");
+
+      let infoVisible = false;
+
+      // Marker found / lost
+      marker.addEventListener("markerFound", () => {
+        hint.innerText = "Tap anywhere to learn more";
+      });
+
+      marker.addEventListener("markerLost", () => {
+        hint.innerText = "Point camera at the marker to view the temple";
+        info.style.display = "none";
+        infoVisible = false;
+      });
+
+      // Tap interaction
+      document.addEventListener("click", () => {
+        infoVisible = !infoVisible;
+        info.style.display = infoVisible ? "block" : "none";
+      });
+    </script>
+
+  </body>
+</html>
